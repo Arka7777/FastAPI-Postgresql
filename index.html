@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudentDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i></div>
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="brand"><span class="logo"><i data-lucide="graduation-cap"></i></span><span class="label">Student<b>DB</b></span></div>
+    <nav>
+      <button class="nav-item active" data-view="overview"><i data-lucide="layout-dashboard"></i><span class="label">Overview</span></button>
+      <button class="nav-item" data-view="students"><i data-lucide="users"></i><span class="label">All Students</span></button>
+      <button class="nav-item" data-action="add"><i data-lucide="user-plus"></i><span class="label">Add Student</span></button>
+      <button class="nav-item" data-view="analytics"><i data-lucide="bar-chart-3"></i><span class="label">Analytics</span></button>
+      <button class="nav-item" data-view="settings"><i data-lucide="settings"></i><span class="label">Settings</span></button>
+    </nav>
+    <button class="nav-item collapse" id="collapseBtn" aria-label="Collapse sidebar"><i data-lucide="panel-left-close"></i><span class="label">Collapse</span></button>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button>
+      <div><h1 id="title">Overview</h1><p class="muted" id="today"></p></div>
+      <label class="search"><i data-lucide="search"></i><input id="search" type="search" placeholder="Search name, email, ID, course" aria-label="Search students"></label>
+      <button class="icon-btn" aria-label="Notifications"><i data-lucide="bell"></i></button>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+      <div class="profile"><span class="avatar">AD</span><span class="who">Admin</span></div>
+    </header>
+
+    <main>
+      <section id="view-overview" class="view">
+        <div class="stats" id="stats"></div>
+        <div class="grid2">
+          <div class="card"><h2>Top 10 by marks</h2><div class="chart"><canvas id="chPerf"></canvas></div></div>
+          <div class="card"><h2>Course distribution</h2><div class="chart"><canvas id="chCourse"></canvas></div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><h2>Recent records</h2><ul class="list" id="recent"></ul></div>
+          <div class="card"><h2>Performance insights</h2><ul class="list" id="insights"></ul></div>
+        </div>
+      </section>
+
+      <section id="view-students" class="view" hidden>
+        <div class="toolbar">
+          <select id="courseFilter" aria-label="Filter by course"><option value="">All courses</option></select>
+          <select id="sortBy" aria-label="Sort by">
+            <option value="name:asc">Name A–Z</option><option value="name:desc">Name Z–A</option>
+            <option value="marks:desc">Marks high–low</option><option value="marks:asc">Marks low–high</option>
+            <option value="age:asc">Age low–high</option><option value="age:desc">Age high–low</option>
+          </select>
+          <span class="spacer"></span>
+          <button class="btn" id="refreshBtn"><i data-lucide="refresh-cw"></i>Refresh</button>
+          <button class="btn primary" data-action="add"><i data-lucide="plus"></i>Add student</button>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Age</th><th>Course</th><th>Marks</th><th>Grade</th><th class="r">Actions</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div id="tableState"></div>
+        </div>
+        <div class="pager" id="pager"></div>
+      </section>
+
+      <section id="view-analytics" class="view" hidden>
+        <div class="grid2">
+          <div class="card"><h2>Grade distribution</h2><div class="chart"><canvas id="chGrade"></canvas></div></div>
+          <div class="card"><h2>Average marks by course</h2><div class="chart"><canvas id="chAvg"></canvas></div></div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view" hidden>
+        <div class="card">
+          <h2>Backend connection</h2>
+          <p class="muted">API base URL is set once at the top of <code>script.js</code>.</p>
+          <p><code id="apiUrl"></code></p>
+          <button class="btn" id="testBtn"><i data-lucide="plug-zap"></i>Test connection</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog id="formModal" aria-labelledby="formTitle">
+  <form id="studentForm" novalidate>
+    <header><h2 id="formTitle">Add student</h2><button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button></header>
+    <div class="fields">
+      <label>Student ID<input name="id" autocomplete="off"><small></small></label>
+      <label>Full name<input name="name" autocomplete="off"><small></small></label>
+      <label>Age<input name="age" type="number"><small></small></label>
+      <label>Marks<input name="marks" type="number"><small></small></label>
+      <label>Course<input name="course" autocomplete="off"><small></small></label>
+      <label>Email<input name="email" type="email" autocomplete="off"><small></small></label>
+    </div>
+    <footer><button type="button" class="btn" data-close>Cancel</button><button class="btn primary" id="saveBtn" type="submit"><span class="spin"></span><span id="saveLabel">Create student</span></button></footer>
+  </form>
+</dialog>
+
+<dialog id="viewModal" aria-label="Student details"><div id="viewBody"></div></dialog>
+<dialog id="confirmModal" aria-label="Confirm delete">
+  <header><h2>Delete student?</h2></header>
+  <p id="confirmText" class="muted pad"></p>
+  <footer><button class="btn" data-close>Cancel</button><button class="btn danger" id="confirmYes">Delete</button></footer>
+</dialog>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="script.js"></script>
+</body>
+</html>
