@@ -1,6 +1,6 @@
 "use strict";
 /* ============ Config (the only place to change the API URL) ============ */
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "https://fastapi-postgresql-6gnl.onrender.com";
 
 /* ============ Helpers ============ */
 const $ = (s, r = document) => r.querySelector(s);
