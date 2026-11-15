@@ -2,6 +2,7 @@
 
 A RESTful Student Management API built with **FastAPI, PostgreSQL, SQLAlchemy, and Docker**. This project demonstrates how to build backend APIs, manage relational database operations, validate request data, and containerize an application using Docker Compose.
 
+## Live Demo : https://fastapi-postgresql-1.onrender.com/
 ## Features
 
 - **FastAPI:** Build RESTful API endpoints.
